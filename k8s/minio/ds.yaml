@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  
+  labels:
+    app: minio
+ 
+  name: minio
+  namespace: minio
+  
+spec:
+  template:
+    metadata:
+     
+      labels:
+        app: minio
+    spec:
+      containers:
+      - args:
+        - server
+        - /data
+        - --console-address
+        - :9001
+        image: minio/minio
+        imagePullPolicy: Always
+        name: minio
+        ports:
+        - containerPort: 9001
+          hostPort: 9001
+          name: console
+          protocol: TCP
+        - containerPort: 9000
+          hostPort: 9000
+          name: api
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: vol-minio-ds
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /k3s/volumes/
+          type: ""
+        name: vol-minio-ds
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate

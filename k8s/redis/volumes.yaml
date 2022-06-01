@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv
+  resourceVersion: "8910006"
+  uid: 5c09b178-f4a8-44b5-b405-c09c7f9a70bd
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 200Mi
+  local:
+    path: /kubernetes/volumes/redis
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - firewire-orion
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  volumeMode: Filesystem
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+
+  labels:
+    {}
+#    key: string
+  namespace: default
+  fields:
+    - redis-pvc
+    - Bound
+    - redis-pv
+    - 200Mi
+    - RWO
+    - local-storage
+    - 17h
+    - Filesystem
+spec:
+  selector:
+    matchLabels:
+#      key: string
+#    matchExpressions:
+#      - key: string
+#        operator: string
+#        values:
+#          - string
+  accessModes:
+    - ReadWriteOnce
+#    - string
+  resources:
+    requests:
+      storage: 200Mi
+#      key: string
+#    limits:
+#      key: string
+  storageClassName: local-storage
+  volumeMode: Filesystem
+  volumeName: redis-pv
+

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: default
+  resourceVersion: "8945636"
+  uid: 785e4a56-78ff-4b0b-894e-73f192d9f97c
+spec:
+  ports:
+  - name: socket
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: default
+  resourceVersion: "8912383"
+  uid: a81ddaa4-e28b-4d9d-ab7f-4d6586ebb233
+spec:
+  ports:
+  - name: socket
+    nodePort: 31113
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+
