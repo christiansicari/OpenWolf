@@ -1,0 +1,142 @@
+
+{
+    "id": "appendchain",
+    "states": {
+        "A": {
+            "id": "A",
+            "function": {
+                "ref": "http_invoker"
+            },
+            "start": true
+        },
+        "B": {
+            "id": "B",
+            "function": {
+                "ref": "collect_aiq_data"
+            }
+        },
+        "C": {
+            "id": "C",
+            "function": {
+                "ref": "collect_images"
+            }
+        },
+        "D": {
+            "id": "D",
+            "function": {
+                "ref": "show_aiq"
+            }
+        },
+        "E": {
+            "id": "E",
+            "function": {
+                "ref": "show_images"
+            }
+        },
+        "F": {
+            "id": "F",
+            "function": {
+                "ref": "infer_traffic"
+            },
+            "end": true
+        }
+    },
+    "functions": {
+        "http_invoker":{
+            "id": "",
+            "platform": "openfaas",
+            "config": {
+
+            },
+            "endpoint": "http://pi1:31112/async-function/appender",
+            "data": {
+                "type": "intern",
+                "uri": "."
+            }
+        },
+        "collect_aiq_data":{
+            "id": "collect_aiq_data",
+            "platform": "openfaas",
+            "config": {
+
+            },
+            "endpoint": "http://pi1:31112/async-function/appender",
+            "data": {
+                "type": "intern",
+                "uri": "."
+            }
+        },
+        "collect_images": {
+            "id": "collect_images",
+            "platform": "openfaas",
+            "config": {
+
+            },
+            "endpoint": "http://pi1:31112/async-function/appender",
+            "data": {
+                "type": "intern",
+                "uri": "."
+            }
+        },
+        "show_images":{
+            "id": "show_images",
+            "endpoint": "http://pi1:31112/async-function/appender",
+            "data": {
+                "type": "intern",
+                "uri": "."
+            }
+        },
+        "show_aiq":{
+            "id": "show_aiq",
+            "platform": "openfaas",
+            "config": {
+
+            },
+            "endpoint": "http://pi1:31112/async-function/appender",
+            "data": {
+                "type": "intern",
+                "uri": "."
+            }
+        },
+        "infer_traffic":{
+            "id": "infer_traffic",
+            "endpoint": "http://pi1:31112/async-function/appender",
+            "data": {
+                "type": "intern",
+                "uri": "."
+            }
+        }
+    },
+    "workflow": {
+        "A": {
+            "activation": "True",
+            "inputFilter": "",
+            "outputFilter": ""
+        },
+        "B": {
+            "activation": "A",
+            "inputFilter": "",
+            "outputFilter": ""
+        },
+        "C": {
+            "activation": "A",
+            "inputFilter": "",
+            "outputFilter": ""
+        },
+        "D": {
+            "activation": "B",
+            "inputFilter": "",
+            "outputFilter": ""
+        },
+        "E": {
+            "activation": "C",
+            "inputFilter": "",
+            "outputFilter": ""
+        },
+        "F": {
+            "activation": "B and C",
+            "inputFilter": "",
+            "outputFilter": ""
+        }
+    }
+}
