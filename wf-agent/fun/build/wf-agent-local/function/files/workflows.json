@@ -1,0 +1,48 @@
+{
+    "workflow.hashchain":{
+        "id": "hashchain",
+        "callbackUrl": "http://172.17.6.175:8080",
+        "states": {
+          "A": {
+            "id": "A",
+            "function": {
+              "ref": "hash"
+            },
+            "start": true
+          },
+          "B": {
+            "id": "B",
+            "function": {
+              "ref": "hash"
+            },
+            "end": true
+          }
+        },
+        "functions": {
+          "hash": {
+            "id": "",
+            "platform": "openfaas",
+            "config": {
+              "id": "hash"
+            },
+            "endpoint": "http://gateway.openfaas.svc.cluster.local:8080/async-function/hash",
+            "data": {
+              "type": "intern",
+              "uri": "."
+            }
+          }
+        },
+        "workflow": {
+          "A": {
+            "activation": "True",
+            "inputFilter": "",
+            "outputFilter": ""
+          },
+          "B": {
+            "activation": "A",
+            "inputFilter": "",
+            "outputFilter": ""
+          }
+        }
+      }
+}

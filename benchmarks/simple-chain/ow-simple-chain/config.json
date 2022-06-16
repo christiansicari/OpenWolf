@@ -1,0 +1,8 @@
+{
+    "agent": "http://172.17.5.157:31114/",
+    "kind": "cloud",
+    "fun": "hash",
+    "attempts":15,
+    "sleep": 6
+
+}

@@ -1,0 +1,7 @@
+{
+    "kind": "edge",
+    "fun": "hash",
+    "attempts":1,
+    "sleep": 7
+
+}

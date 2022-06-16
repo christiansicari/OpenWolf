@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: redis
+  name: redis
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: MASTER
+      value: "true"
+    image: redislabs/rejson:2.0.11
+    imagePullPolicy: IfNotPresent
+    name: redis
+    ports:
+    - containerPort: 6379
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 100m
+      requests:
+        cpu: 100m
+    volumeMounts:
+    - mountPath: /redis-master-data
+      name: data
+    - mountPath: /redis-master
+      name: config
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: redis-pvc
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: redis-config
+        path: redis.conf
+      name: redis-config
+    name: config

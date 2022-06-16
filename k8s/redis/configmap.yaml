@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  redis-config: "maxmemory 2mb\nmaxmemory-policy allkeys-lru \n"
+kind: ConfigMap
+metadata:
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:redis-config: {}
+    manager: agent
+    operation: Update
+    time: "2022-05-31T13:46:48Z"
+  name: redis-config
+  namespace: default
