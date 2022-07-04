@@ -1,0 +1,40 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ow-agent
+  namespace: default
+ 
+spec:
+ 
+  ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    workload.user.cattle.io/workloadselector: apps.deployment-default-ow-agent
+  type: ClusterIP
+status:
+  loadBalancer: {}
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ow-agent-external
+  namespace: default
+  resourceVersion: "4154"
+  uid: 964aa04e-6ac8-441f-96ac-cd4a17aaabb3
+spec:
+  ports:
+  - name: http
+    nodePort: 31114
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: ow-agent
+status:
+  loadBalancer: {}
+  
