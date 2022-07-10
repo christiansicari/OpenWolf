@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import jwt
 import string
 import random
 from fastapi import FastAPI, Response, Depends, HTTPException, status
