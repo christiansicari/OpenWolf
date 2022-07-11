@@ -41,7 +41,7 @@ class User(BaseModel):
     username: str
     email: Union[str, None] = None
     full_name: Union[str, None] = None
-    disabled: Union[bool, None] = None
+    #disabled: Union[bool, None] = None
 
 
 class UserInDB(User):
@@ -76,12 +76,12 @@ async def hi(response: Response):
     time.sleep(10)
     return
 
-def get_random_string(length):
+""" def get_random_string(length):
     # choose from all lowercase letter
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     print("Random string of length", length, "is:", result_str)
-    return result_str
+    return result_str """
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -136,10 +136,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return user
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
+""" async def get_current_active_user(current_user: User = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+    return current_user """
 
 
 @app.post("/token", response_model=Token)
@@ -159,17 +159,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 @app.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
+async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
-
-
-@app.get("/users/me/items/")
-async def read_own_items(current_user: User = Depends(get_current_active_user)):
-    return [{"item_id": "Foo", "owner": current_user.username}]
 
 @app.post("/trigger")
 #def event(request: Event, response: Response):
-def event(request: Union[Dict,Any], response: Response, current_user: User = Depends(get_current_active_user)):
+def event(request: Union[Dict,Any], response: Response, current_user: User = Depends(get_current_user)):
 #def event(request: Union[Dict,Any], response: Response):
     #print("incoming event, status: ", request.headers.get('x-function-status'))
     if type(request) == str: 
