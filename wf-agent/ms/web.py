@@ -1,6 +1,4 @@
 from datetime import datetime, timedelta
-import string
-import random
 from fastapi import FastAPI, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -152,12 +150,12 @@ def event(request: Union[Dict,Any], response: Response, current_user: User = Dep
     try:
         wf_trigger(request)
         response.status_code = 202
+        return {"triggered": True}
     except Exception as e:
         print(e)
-        traceback.print_exc()
-        
+        traceback.print_exc()  
         response.status_code = 501
-    return
+        return "Not implemented"
 
 @app.post("/exec")
 def event(request: Union[Dict,Any], response: Response):
