@@ -77,7 +77,6 @@ def finalize(r, url, data):
     exec_id = data['ctx']['execID']
     print(f"Finalizing {exec_id} to", url)
     request("POST", url=url, data=json.dumps(data["data"]))
-    r.json().set(exec_id, Path.rootPath(), data)
     
 
 
@@ -99,7 +98,6 @@ def wf_trigger(req):
     wid = f'workflow.{req["ctx"]["workflowID"]}'
     r = Redis(host=redis_host, password=redis_password, port=redis_port)
     wf = r.json().get(wid)
-    #print("wf", wf)
     
     
     state = req["ctx"]["state"]
@@ -136,7 +134,6 @@ def handle(req):
     wid = f'workflow.{req["ctx"]["workflowID"]}'
     r = Redis(host=redis_host, password=redis_password, port=redis_port)
     wf = r.json().get(wid)
-    #print("wf", wf)
     
     state = req["ctx"]["state"]
     exec_id = req["ctx"]["execID"]
