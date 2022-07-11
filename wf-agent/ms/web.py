@@ -23,7 +23,7 @@ fake_users_db = {
         "full_name": "John Doe",
         "email": "johndoe@example.com",
         "hashed_password": "$2a$12$JTPqc.n8rH3H7ltxO5QyYOxtpUJhp09Z/9L4hgSCntLSldXS.9RZi",
-        "disabled": False,
+        #"disabled": False,
     }
 }
 
@@ -61,12 +61,6 @@ class Event(BaseModel):
     ctx: Context
     data: dict
 
-#user1 = User(id=1,uname="gamorabito",pwd="gamorabito")
-""" user1.uname = "gamorabito"
-user1.pwd = "gamorabito"
-user1.id = 1 """
-
-
 app = FastAPI()
 
 @app.get("/test")
@@ -75,13 +69,6 @@ async def hi(response: Response):
     import time
     time.sleep(10)
     return
-
-""" def get_random_string(length):
-    # choose from all lowercase letter
-    letters = string.ascii_lowercase
-    result_str = ''.join(random.choice(letters) for i in range(length))
-    print("Random string of length", length, "is:", result_str)
-    return result_str """
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -136,12 +123,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return user
 
-""" async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user """
-
-
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -163,10 +144,7 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 @app.post("/trigger")
-#def event(request: Event, response: Response):
 def event(request: Union[Dict,Any], response: Response, current_user: User = Depends(get_current_user)):
-#def event(request: Union[Dict,Any], response: Response):
-    #print("incoming event, status: ", request.headers.get('x-function-status'))
     if type(request) == str: 
         request = json.dumps(request)
     elif type(request) == bytes:
@@ -184,10 +162,7 @@ def event(request: Union[Dict,Any], response: Response, current_user: User = Dep
     return
 
 @app.post("/exec")
-#def event(request: Event, response: Response):
 def event(request: Union[Dict,Any], response: Response):
-#def event(request: Union[Dict,Any], response: Response):
-    #print("incoming event, status: ", request.headers.get('x-function-status'))
     if type(request) == str: 
         request = json.dumps(request)
     elif type(request) == bytes:
@@ -206,47 +181,4 @@ def event(request: Union[Dict,Any], response: Response):
 
 
 if __name__ == '__main__':
-    #uvicorn.run("web:app", host="0.0.0.0", port=8000, workers=10)
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-""" def encode_auth_token(user_id, secret):
-    try:
-        payload = {
-            'exp': datetime.utcnow() + timedelta(days=0, seconds=3600),
-            'iat': datetime.utcnow(),
-            'sub': user_id
-        }
-        return jwt.encode(
-            payload,
-            secret,
-            algorithm='HS256'
-        )
-    except Exception as e:
-        return e """
-
-
-""" @app.post("/login")
-def login(request: Union[Dict,Any], response: Response):
-    #print("incoming event, status: ", request.headers.get('x-function-status'))
-    if type(request) == str: 
-        request = json.dumps(request)
-    elif type(request) == bytes:
-        request = json.loads(request.decode('utf-8'))
-    elif type(request) != dict:
-        raise ValueError("type in body not recognized")
-    try:
-        print(request)
-        if(request["uname"] == user1.uname and request["pwd"] == user1.pwd):
-            user1.sec = get_random_string(32)
-            token = encode_auth_token(user1.id, user1.sec)
-            user1.token = token
-            print(user1.token)
-            response.status_code = 200
-        else:
-            response.status_code = 401
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        response.status_code = 500
-    return """
