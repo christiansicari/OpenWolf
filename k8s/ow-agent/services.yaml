@@ -35,6 +35,7 @@ spec:
     targetPort: 8000
   selector:
     app: ow-agent
+  type: NodePort
 status:
   loadBalancer: {}
   
