@@ -13,7 +13,8 @@ spec:
     protocol: TCP
     targetPort: 8000
   selector:
-    workload.user.cattle.io/workloadselector: apps.deployment-default-ow-agent
+    app: ow-agent
+#    workload.user.cattle.io/workloadselector: apps.deployment-default-ow-agent
   type: ClusterIP
 status:
   loadBalancer: {}
