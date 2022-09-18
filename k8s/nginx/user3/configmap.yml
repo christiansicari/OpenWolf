@@ -34,5 +34,13 @@ data:
         location ~* .user3 {
           proxy_pass http://gateway.openfaas.svc.cluster.local:8080$1;
         }
+
+        location ~* .group1 {
+          proxy_pass http://gateway.openfaas.svc.cluster.local:8080$1;
+        }
+
+        location ~* .group2 {
+          proxy_pass http://gateway.openfaas.svc.cluster.local:8080$1;
+        }
       }
     }
