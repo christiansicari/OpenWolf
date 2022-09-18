@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: confnginx
-  namespace: group2
+  namespace: user1
 data:
   nginx.conf: |
     user  nginx;
@@ -31,7 +31,7 @@ data:
           return 200;
         }
 
-        location ~* .group2 {
+        location ~* .user1 {
           proxy_pass http://gateway.openfaas.svc.cluster.local:8080$1;
         }
       }
