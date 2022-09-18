@@ -60,7 +60,10 @@ def openfaas_invoker(conf, data):
     
     headers = conf["config"]
     headers["X-Callback-Url"] = f'{this["host"]}exec'
+    #headers["X-Callback-Url"] = 'http://172.16.1.176:31114/exec'
     print("Invoke", conf["endpoint"], headers)
+    print("Data sent:")
+    print(data)
     request("POST", url=conf["endpoint"], headers=headers, data=json.dumps(data))
 
 def trigger(wf, state, data):
@@ -100,11 +103,51 @@ def get_workflow(workflows, wid):
         print(f"Workflow {wid} in cache")
     return workflows[wid]
 
-def wf_trigger(req):
+def wf_trigger(req, username):
     print("Received body", req, type(req))
     wid = f'workflow.{req["ctx"]["workflowID"]}'
     r = get_redis()
-    wf = r.json().get(wid)
+    """ print("redis:")
+    print(r)
+    print("redis keys:")
+    print(r.keys()) """
+    wf = r.json().get(f"{wid}")
+    user = r.json().get(username)
+
+    """ print("workflow:")
+    print(wf)
+
+    print("user:")
+    print(user) """
+
+    allowed = user["groups"]
+    allowed.append(username)
+    allowed.append("openfaas-fn")
+
+    functions = wf["functions"]
+
+    scopes = set()
+
+    for key in functions.keys():
+        endpoint = functions[key]["endpoint"]
+        scope = endpoint.split(".")[-1]
+        scopes.add(scope)
+    
+    print(allowed)
+    print(scopes)
+
+    for scope in scopes:
+        if scope not in allowed:
+            return False
+        """ found = False
+        for entry in allowed:
+            print(scope)
+            print(entry)
+            if scope == entry:
+                found = True
+                break
+        if not found:
+            return False """
     
     state = req["ctx"]["state"]
     exec_id = req["ctx"]["execID"]
@@ -120,7 +163,8 @@ def wf_trigger(req):
     expires_delta = timedelta(minutes=constants.ACCESS_TOKEN_EXPIRE_MINUTES)
     exec_token = create_exec_token(token_payload, expires_delta)
     #print(exec_token)
-    req["token"] = exec_token
+    req["exec_token"] = exec_token
+    #req["token"] = token
     
     lockname = f'lock-{exec_id}'
     sem = lock.Lock(redis=r, name=lockname, timeout=60)
@@ -142,6 +186,7 @@ def wf_trigger(req):
         for act_state in activable:
             req["ctx"]["state"] = act_state
             trigger(wf, act_state, req)
+    return True
 
 def handle(req):
     print("Received body", req, type(req))

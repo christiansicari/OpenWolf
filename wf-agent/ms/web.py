@@ -11,15 +11,15 @@ import traceback
 import json
 import constants
 
-fake_users_db = {
+""" fake_users_db = {
     "johndoe": {
         "username": "johndoe",
         "full_name": "John Doe",
         "email": "johndoe@example.com",
         "hashed_password": "$2a$12$JTPqc.n8rH3H7ltxO5QyYOxtpUJhp09Z/9L4hgSCntLSldXS.9RZi",
         #"disabled": False,
-    }
-}
+    },
+} """
 
 class Token(BaseModel):
     access_token: str
@@ -32,26 +32,26 @@ class WFTokenData(BaseModel):
     wid: Union[str, None] = None
     exec_id: Union[str, None] = None
 
-class User(BaseModel):
+""" class User(BaseModel):
     username: str
     email: Union[str, None] = None
     full_name: Union[str, None] = None
 
 class UserInDB(User):
-    hashed_password: str
+    hashed_password: str """
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-class Context(BaseModel):
+""" class Context(BaseModel):
     workflowID: str
     execID: Union[str, None] = None
-    state: Union[str, None] = None
+    state: Union[str, None] = None """
 
-class Event(BaseModel):
+""" class Event(BaseModel):
     ctx: Context
-    data: dict
+    data: dict """
 
 app = FastAPI()
 
@@ -70,17 +70,20 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db, username: str):
+""" def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
-        return UserInDB(**user_dict)
+        return UserInDB(**user_dict) """
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+#def authenticate_user(fake_db, username: str, password: str):
+def authenticate_user(username: str, password: str):
+    r = get_redis()
+    #user = get_user(r, username=token_data.username)
+    user = r.json().get(f'{username}')
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user["hashed_password"]):
         return False
     return user
 
@@ -94,7 +97,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     encoded_jwt = jwt.encode(to_encode, constants.SECRET_KEY, algorithm=constants.ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+""" async def get_current_user_token(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -108,7 +111,44 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    r = get_redis()
+    #user = get_user(r, username=token_data.username)
+    user = r.json().get(f'{token_data.username}')
+    if user is None:
+        raise credentials_exception
+    return token """
+
+async def get_current_user_username(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[constants.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    r = get_redis()
+    #user = get_user(r, username=token_data.username)
+    user = r.json().get(f'{token_data.username}')
+    if user is None:
+        raise credentials_exception
+    return user["username"]
+
+def get_current_user(token):
+    
+    payload = jwt.decode(token, constants.SECRET_KEY, algorithms=[constants.ALGORITHM])
+    username: str = payload.get("sub")
+    if username is None:
+        return None
+    token_data = TokenData(username=username)
+    r = get_redis()
+    #user = get_user(r, username=token_data.username)
+    user = r.json().get(f'{token_data.username}')
     if user is None:
         raise credentials_exception
     return user
@@ -144,7 +184,8 @@ def decode_exec_token(token: str):
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    #user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -153,17 +194,17 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=constants.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user["username"]}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=User)
+""" @app.get("/users/me/", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
+    return current_user """
 
 @app.post("/trigger")
-def event(request: Union[Dict,Any], response: Response, current_user: User = Depends(get_current_user)):
+def event(request: Union[Dict,Any], response: Response, current_user: str = Depends(get_current_user_username)):
     if type(request) == str: 
         request = json.dumps(request)
     elif type(request) == bytes:
@@ -171,9 +212,12 @@ def event(request: Union[Dict,Any], response: Response, current_user: User = Dep
     elif type(request) != dict:
         raise ValueError("type in body not recognized")
     try:
-        wf_trigger(request)
-        response.status_code = 202
-        return {"triggered": True}
+        triggered = wf_trigger(request, current_user)
+        if(triggered):
+            response.status_code = 202
+        else:
+            response.status_code=401
+        return {"triggered": triggered}
     except Exception as e:
         print(e)
         traceback.print_exc()  
@@ -188,15 +232,22 @@ def event(request: Union[Dict,Any], response: Response):
         request = json.loads(request.decode('utf-8'))
     elif type(request) != dict:
         raise ValueError("type in body not recognized")
+    print(f"request{request}")
     try:
-        #print(f"request{request}")
-        token_data = decode_exec_token(request["token"])
+        #exec_token_data = decode_exec_token(request["exec_token"])
+        """ user = get_current_user(request["token"])
+        print("user:")
+        print(user) """
         #print(f"token-data: {token_data}")
-        if token_data is None:
-            response.status_code = 401
-        elif token_data.exec_id == request["ctx"]["execID"] and token_data.wid == request["ctx"]["workflowID"]:
-            handle(request)
-            response.status_code = 202
+        if "exec_token" in request:
+            exec_token_data = decode_exec_token(request["exec_token"])
+            if exec_token_data is None:
+                response.status_code = 401
+            elif exec_token_data.exec_id == request["ctx"]["execID"] and exec_token_data.wid == request["ctx"]["workflowID"]:
+                handle(request)
+                response.status_code = 202
+            else:
+                response.status_code = 401 
         else:
             response.status_code = 401
     except Exception as e:
