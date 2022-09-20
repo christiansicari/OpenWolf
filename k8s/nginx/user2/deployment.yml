@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: user2
+  namespace: proxy-user2
   labels:
     app: nginx
 spec:

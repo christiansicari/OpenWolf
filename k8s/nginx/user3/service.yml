@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: nginx
-  namespace: user3
+  namespace: proxy-user3
 spec:
   selector:
     app: nginx

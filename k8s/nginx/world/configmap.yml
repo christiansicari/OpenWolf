@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: confnginx
-  namespace: openfaas-fn
+  namespace: proxy-world
 data:
   nginx.conf: |
     user  nginx;
@@ -31,16 +31,8 @@ data:
           return 200;
         }
 
-         location ~* / {
+         location ~* .openfaas-fn {
           proxy_pass http://gateway.openfaas.svc.cluster.local:8080$1;
-        }
-
-        location / {
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "Upgrade";
-          proxy_pass http://gateway.openfaas.svc.cluster.local:8080$1;
-          proxy_set_header Host $host;
-          proxy_http_version 1.1;
         }
       }
     }

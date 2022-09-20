@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: confnginx
-  namespace: user2
+  namespace: proxy-user2
 data:
   nginx.conf: |
     user  nginx;

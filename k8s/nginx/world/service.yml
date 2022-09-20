@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: nginx
-  namespace: openfaas-fn
+  namespace: proxy-world
 spec:
   selector:
     app: nginx
