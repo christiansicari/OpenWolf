@@ -17,3 +17,6 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: default
+        - namespaceSelector:
+            matchLabels:
+              app: nginx

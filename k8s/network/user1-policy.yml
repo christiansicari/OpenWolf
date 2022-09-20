@@ -15,6 +15,9 @@ spec:
         - namespaceSelector:
             matchLabels:
               scope: user1
-        - podSelector:
+        - namespaceSelector:
             matchLabels:
-              app: ow-agent
+              kubernetes.io/metadata.name: default
+        - namespaceSelector:
+            matchLabels:
+              app: nginx

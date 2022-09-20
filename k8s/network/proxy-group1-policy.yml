@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: user3-network-policy
-  namespace: user3
+  name: proxy-group1-network-policy
+  namespace: proxy-group1
 spec:
   podSelector: {}
   policyTypes:
@@ -14,10 +14,10 @@ spec:
               kubernetes.io/metadata.name: openfaas
         - namespaceSelector:
             matchLabels:
+              scope: group1
+        - namespaceSelector:
+            matchLabels:
+              scope: user1
+        - namespaceSelector:
+            matchLabels:
               scope: user3
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: default
-        - namespaceSelector:
-            matchLabels:
-              app: nginx
