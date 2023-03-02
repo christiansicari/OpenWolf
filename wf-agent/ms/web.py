@@ -30,6 +30,14 @@ class WFTokenData(BaseModel):
     wid: Union[str, None] = None
     exec_id: Union[str, None] = None
 
+""" class User(BaseModel):
+    username: str
+    email: Union[str, None] = None
+    full_name: Union[str, None] = None
+
+class UserInDB(User):
+    hashed_password: str """
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

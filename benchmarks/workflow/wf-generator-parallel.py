@@ -5,7 +5,7 @@ this = path.dirname(path.realpath(__file__))
 from sys import argv
 template = {
   "id": "timeloggerchain",
-  "callbackUrl": "http://172.17.6.175:8080",
+  "callbackUrl": "https://webhook.site/a2d92fea-3ff7-4b4a-bf5e-62229c6c085b",
   "states": {
     "A": {
       "id": "A",
@@ -22,7 +22,7 @@ template = {
       "config": {
         "id": "timelogger"
       },
-      "endpoint": "http://gateway.openfaas.svc.cluster.local:8080/async-function/timelogger",
+      "endpoint": "http://gateway.openfaas.svc.cluster.local:8080/async-function/timelogger.openfaas-fn",
       "data": {
         "type": "intern",
         "uri": "."
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     add_state(wf, name)
     wf["states"][name]["end"] = True
     wf["workflow"][name]["activation"] = " and ".join(sids)
-    template["id"] = f"par-{states}-{template['id']}"
+    template["id"] = f"par-{states}-{template['id']}-world"
     
     with open(path.join(this, f"./workflow.par-{name}.json"), "w") as f:
         json.dump(template, f)

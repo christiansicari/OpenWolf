@@ -191,13 +191,11 @@ def wf_trigger(req, username):
         endpoint = functions[key]["endpoint"]
         scope = endpoint.split(".")[-1]
         scopes.add(scope)
-    
-    """ print(allowed)
-    print(scopes) """
 
     for scope in scopes:
         if scope not in allowed:
             return False
+        
     
     state = req["ctx"]["state"]
     exec_id = req["ctx"]["execID"]
