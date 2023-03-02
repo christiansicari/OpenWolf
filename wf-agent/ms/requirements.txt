@@ -3,5 +3,9 @@ pydantic==1.9.1
 uvicorn==0.17.6
 redis==4.0.0
 requests_futures==1.0.0
+pyjwt==1.4.2
 fastapi==0.78.0
 hiredis==2.0.0
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart

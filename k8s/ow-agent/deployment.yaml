@@ -20,6 +20,7 @@ spec:
       labels:
         app: ow-agent
     spec:
+      serviceAccountName: ow-agent
       containers:
       - env:
         - name: REDIS_HOST
@@ -28,9 +29,26 @@ spec:
           value: "6379"
         - name: THIS
           value: http://ow-agent.default.svc.cluster.local:8000/
-        image: christiansicari/ow-agent
+#        - name: OPENFAAS_ADMIN
+#          value: "admin"
+#        - name: OPENFAAS_PASSWORD
+#          value: 176Js81K6bsEb20C58nOnjyUH
+#        - name: JWT_KEY
+#          value : 09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+        - name: JWT_ALGORITHM
+          value: HS256
+        - name: JWT_EXPIRE_MINUTES
+          value: "30"
+        image: gabrielemorabito/ow-agent
         imagePullPolicy: Always
         name: agent
         ports:
         - containerPort: 8000
           name: http
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ow-agent
+  labels:
+    app: ow-agent
