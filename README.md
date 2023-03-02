@@ -130,3 +130,7 @@ extracts the context information,
 and uses it for fetching all the workflow and current execution information. 
 Therefore, it triggers the next states in the manifest, forwarding the right 
 received event with the updated ctx property.
+
+# papers
+1. https://www.researchgate.net/publication/363272665_OpenWolf_Serverless_Workflow_Engine_for_AI_on_Continuum
+2. https://www.researchgate.net/publication/361902963_OpenWolf_A_Serverless_Workflow_Engine_for_Native_Cloud-Edge_Continuum
