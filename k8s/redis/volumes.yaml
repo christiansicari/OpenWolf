@@ -13,10 +13,10 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: kubernetes.io/arch
           operator: In
           values:
-          - firewire-orion
+          - amd64
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   volumeMode: Filesystem
