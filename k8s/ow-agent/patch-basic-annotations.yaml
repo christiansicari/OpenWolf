@@ -1,0 +1,15 @@
+# patch-basic-annotations.yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "agent"
+        vault.hashicorp.com/agent-inject-secret-openfaas: "secret/openfaas"
+        vault.hashicorp.com/agent-inject-secret-jwt: "secret/jwt"
+        vault.hashicorp.com/agent-inject-secret-world: "openfaas/world-secret"
+        vault.hashicorp.com/agent-inject-secret-user1: "openfaas/user1-secret"
+        vault.hashicorp.com/agent-inject-secret-user2: "openfaas/user2-secret"
+        vault.hashicorp.com/agent-inject-secret-user3: "openfaas/user3-secret"
+        vault.hashicorp.com/agent-inject-secret-group1: "openfaas/group1-secret"
+        vault.hashicorp.com/agent-inject-secret-group2: "openfaas/group2-secret"
